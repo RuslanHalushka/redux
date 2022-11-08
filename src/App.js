@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useCallback, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {Header} from "./components/header";
+import './styles.css';
+import {ProductList} from "./components/product-list";
+import {SET_PRODUCTS, setProducts} from './redux'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App(){
+    const {cart, wishlist, products} = useSelector(
+        ({cart: {cart}, wishlist: {wishlist}, products: {products}})=>({
+            cart, wishlist, products
+        })
+    );
+
+    const dispatch = useDispatch();
+    const fetchData = useCallback(async ()=>{
+        const url = 'https://fakestoreapi.com/products';
+        const response = await fetch(url).then(value => value.json());
+        dispatch({type: SET_PRODUCTS, payload: response})
+    })
+
+    useEffect(()=>{
+        fetchData()
+    }, [dispatch])
+
+    return(
+        <div>
+            {products.length}
+            <Header/>
+            <ProductList products = {products}/>
+        </div>
+    )
 }
-
-export default App;
